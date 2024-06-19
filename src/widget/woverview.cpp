@@ -592,6 +592,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackBackground(&painter);
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
+        drawMinuteMarkers(&painter);
         drawPlayedOverlay(&painter);
         drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
@@ -670,6 +671,39 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
 
         pPainter->drawImage(rect(), m_waveformImageScaled);
+    }
+}
+
+void WOverview::drawMinuteMarkers(QPainter* pPainter) {
+
+    if (!m_trackLoaded) return;
+
+    double trackSamples = getTrackSamples();
+    double trackSeconds = samplePositionToSeconds(trackSamples);
+
+    QLineF line;
+    pPainter->setPen(QPen(Qt::white, m_scaleFactor));
+    pPainter->setOpacity(1);
+
+    double allHeight = height();
+    double drawVerticalLength = allHeight * 0.08;
+    double drawY2Offset = allHeight * 0.92;
+    double drawXPos;
+    double currentMarkerSeconds = 60;
+    while(1)
+    {
+        drawXPos = currentMarkerSeconds / trackSeconds * width();
+
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(drawXPos, 0.0, drawXPos, drawVerticalLength);
+            pPainter->drawLine(line);
+            line.setLine(drawXPos, drawY2Offset, drawXPos, allHeight);
+            pPainter->drawLine(line);
+        } else {
+            // ?
+        }
+        currentMarkerSeconds += 60;
+        if (currentMarkerSeconds > trackSeconds) break;
     }
 }
 

@@ -109,6 +109,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
+    void drawMinuteMarkers(QPainter* pPainter);
     void drawPlayedOverlay(QPainter* pPainter);
     void drawPlayPosition(QPainter* pPainter);
     void drawEndOfTrackFrame(QPainter* pPainter);
