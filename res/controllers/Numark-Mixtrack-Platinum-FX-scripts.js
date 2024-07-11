@@ -1030,12 +1030,14 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
                     this.longPressMode=MixtrackPlatinumFX.PadModeControls.FADERCUTS3;
                 }
                 this.longPressHeld = true;
+
+                const saveThis = this; // 'this' in the function passed to engine.beginTimer is not 'this' here
                 this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout*2, function() {
-                    if (this.longPressHeld) {
-                        this.setMode(channel, this.longPressMode);
+                    if (saveThis.longPressHeld) {
+                        saveThis.setMode(channel, saveThis.longPressMode);
                     }
-                    this.longPressTimer = 0;
-                    this.longPressHeld = false;
+                    saveThis.longPressTimer = 0;
+                    saveThis.longPressHeld = false;
                 }, true);
             }
         }
