@@ -1040,7 +1040,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
                 this.longPressHeld = true;
 
                 const saveThis = this; // 'this' in the function passed to engine.beginTimer is not 'this' here
-                this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout*2, function() {
+                this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout/**2*/, function() {
                     if (saveThis.longPressHeld) {
                         saveThis.setMode(channel, saveThis.longPressMode);
                     }
