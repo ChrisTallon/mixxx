@@ -100,6 +100,8 @@ MixtrackPlatinumFX.trackBPM = function(value, group, _control) {
     MixtrackPlatinumFX.bpms[script.deckFromGroup(group) - 1] = engine.getValue(group, "bpm");
 };
 
+MixtrackPlatinumFX.saveLibraryFocussedWidget = 0;
+
 MixtrackPlatinumFX.BlinkTimer=0;
 MixtrackPlatinumFX.BlinkState=true;
 MixtrackPlatinumFX.BlinkStateSlow=true;
@@ -244,6 +246,7 @@ MixtrackPlatinumFX.init = function(id, debug) {
     midi.sendShortMsg(0x92, 0x46, 0x7F);
     midi.sendShortMsg(0x93, 0x46, 0x7F);
 
+    engine.makeConnection("[Library]", "focused_widget", MixtrackPlatinumFX.libraryFocussedWidgetCallback);
 
     MixtrackPlatinumFX.BlinkTimer = engine.beginTimer(MixtrackPlatinumFX.blinkDelay/2, MixtrackPlatinumFX.BlinkFunc);
 };
@@ -1625,6 +1628,61 @@ MixtrackPlatinumFX.Browse = function() {
     });
 };
 MixtrackPlatinumFX.Browse.prototype = new components.ComponentContainer();
+
+MixtrackPlatinumFX.UnfocussedBrowse = function(channel, control, value, _status, _group) {
+
+    const focussedLibraryWidget = engine.getValue("[Library]", "focused_widget");
+    if (focussedLibraryWidget !== 0) { return; } // Window is focussed. Let the original code handle this
+
+    if (MixtrackPlatinumFX.saveLibraryFocussedWidget === 3) { // Focus is playlist
+        if (value === 0x01) {
+            engine.setValue("[Playlist]", "SelectNextTrack", 1);
+        } else if (value === 0x7F) {
+            engine.setValue("[Playlist]", "SelectPrevTrack", 1);
+        }
+    } else if (MixtrackPlatinumFX.saveLibraryFocussedWidget === 2) { // Focus is side bar list
+        if (value === 0x01) {
+            engine.setValue("[Playlist]", "SelectNextPlaylist", 1);
+        } else if (value === 0x7F) {
+            engine.setValue("[Playlist]", "SelectPrevPlaylist", 1);
+        }
+    }
+};
+
+MixtrackPlatinumFX.libraryFocussedWidgetCallback = function(value, _group, _control) {
+    if (value !== 0) { // Window is focussed - just save which widget is active
+        MixtrackPlatinumFX.saveLibraryFocussedWidget = value;
+    }
+};
+
+MixtrackPlatinumFX.UnfocussedBrowseKnobButton = function(_channel, _control, _value, _status, _group) {
+
+    const focussedLibraryWidget = engine.getValue("[Library]", "focused_widget");
+    if (focussedLibraryWidget !== 0) { return; } // Window is focussed. Let the original code handle this
+
+    if (MixtrackPlatinumFX.shifted && (MixtrackPlatinumFX.saveLibraryFocussedWidget === 2)) {
+        engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", 1);
+        return;
+    }
+
+    switch (MixtrackPlatinumFX.saveLibraryFocussedWidget) {
+    case 1:
+        // switch to side bar
+        engine.setValue("[Library]", "focused_widget", 2);
+        MixtrackPlatinumFX.saveLibraryFocussedWidget = 2;
+        break;
+    case 2:
+        // switch to playlist
+        engine.setValue("[Library]", "focused_widget", 3);
+        MixtrackPlatinumFX.saveLibraryFocussedWidget = 3;
+        break;
+    case 3:
+        // switch to search box
+        engine.setValue("[Library]", "focused_widget", 1);
+        MixtrackPlatinumFX.saveLibraryFocussedWidget = 1;
+        break;
+    }
+};
 
 MixtrackPlatinumFX.Gains = function() {
     this.mainGain = new components.Pot({

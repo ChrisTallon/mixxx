@@ -196,6 +196,26 @@
                 </options>
             </control>
             <control>
+                <group>[Library]</group>
+                <key>MixtrackPlatinumFX.UnfocussedBrowse</key>
+                <description>Second binding for unfocussed browse knob anticlockwise</description>
+                <status>0xBF</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MixtrackPlatinumFX.UnfocussedBrowse</key>
+                <description>Second binding for unfocussed browse knob clockwise</description>
+                <status>0xBF</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>MixtrackPlatinumFX.deck[0].cueButton.input</key>
                 <status>0x80</status>
@@ -1127,6 +1147,26 @@
                 <key>MixtrackPlatinumFX.browse.knobButton.input</key>
                 <status>0x9F</status>
                 <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MixtrackPlatinumFX.UnfocussedBrowseKnobButton</key>
+                <description>Second binding for unfocussed browse knob button input - normal press</description>
+                <status>0x9F</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MixtrackPlatinumFX.UnfocussedBrowseKnobButton</key>
+                <description>Second binding for unfocussed browse knob button input - shifted press</description>
+                <status>0x9F</status>
+                <midino>0x06</midino>
                 <options>
                     <script-binding/>
                 </options>
