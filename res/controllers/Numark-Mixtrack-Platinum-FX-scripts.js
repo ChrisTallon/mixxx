@@ -1623,9 +1623,17 @@ MixtrackPlatinumFX.UnfocussedBrowse = function(channel, control, value, _status,
 
     if (MixtrackPlatinumFX.saveLibraryFocussedWidget === 3) { // Focus is playlist
         if (value === 0x01) {
-            engine.setValue("[Playlist]", "SelectNextTrack", 1);
+            if (MixtrackPlatinumFX.shifted) {
+                engine.setValue("[Playlist]", "SelectTrackKnob", 10);
+            } else {
+                engine.setValue("[Playlist]", "SelectNextTrack", 1);
+            }
         } else if (value === 0x7F) {
-            engine.setValue("[Playlist]", "SelectPrevTrack", 1);
+            if (MixtrackPlatinumFX.shifted) {
+                engine.setValue("[Playlist]", "SelectTrackKnob", -10);
+            } else {
+                engine.setValue("[Playlist]", "SelectPrevTrack", 1);
+            }
         }
     } else if (MixtrackPlatinumFX.saveLibraryFocussedWidget === 2) { // Focus is side bar list
         if (value === 0x01) {
