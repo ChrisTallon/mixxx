@@ -1044,7 +1044,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
                 this.longPressHeld = true;
 
                 const thirdaryMode = this; // Can't use 'this' in function below
-                this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout*2, function() {
+                this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout/**2*/, function() {
                     if (thirdaryMode.longPressHeld) {
                         thirdaryMode.setMode(channel, thirdaryMode.longPressMode);
                     }
