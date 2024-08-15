@@ -969,23 +969,23 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
                 engine.stopTimer(this.longPressTimer);
                 // there was a time, see if its for this button, if it is then this is a double press so active the same as if it has been a long press
                 // cancel the timer eitherway
-                if (control===MixtrackPlatinumFX.PadModeControls.SAMPLE1 && this.longPressMode===MixtrackPlatinumFX.PadModeControls.KEYPLAY) {
-                    this.setMode(channel, this.longPressMode);
+                if (control===MixtrackPlatinumFX.PadModeControls.SAMPLE1 && this.longPressMode===MixtrackPlatinumFX.PadModeControls.SAMPLE2) {
+                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.KEYPLAY);
                     this.longPressTimer = 0;
                     return;
                 }
-                if (control===MixtrackPlatinumFX.PadModeControls.HOTCUE && this.longPressMode===MixtrackPlatinumFX.PadModeControls.BEATJUMP) {
-                    this.setMode(channel, this.longPressMode);
+                if (control===MixtrackPlatinumFX.PadModeControls.HOTCUE && this.longPressMode===MixtrackPlatinumFX.PadModeControls.HOTCUE2) {
+                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.BEATJUMP);
                     this.longPressTimer = 0;
                     return;
                 }
-                if (control===MixtrackPlatinumFX.PadModeControls.FADERCUTS && this.longPressMode===MixtrackPlatinumFX.PadModeControls.FADERCUTS3) {
-                    this.setMode(channel, this.longPressMode);
+                if (control===MixtrackPlatinumFX.PadModeControls.FADERCUTS && this.longPressMode===MixtrackPlatinumFX.PadModeControls.FADERCUTS2) {
+                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.FADERCUTS3);
                     this.longPressTimer = 0;
                     return;
                 }
-                if (control===MixtrackPlatinumFX.PadModeControls.AUTOLOOP && this.longPressMode===MixtrackPlatinumFX.PadModeControls.AUTOLOOP3) {
-                    this.setMode(channel, this.longPressMode);
+                if (control===MixtrackPlatinumFX.PadModeControls.AUTOLOOP && this.longPressMode===MixtrackPlatinumFX.PadModeControls.AUTOLOOP2) {
+                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.AUTOLOOP3);
                     this.longPressTimer = 0;
                     return;
                 }
@@ -1023,16 +1023,16 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
         if (this.longPressTimer===0) {
             if (ctrl2===MixtrackPlatinumFX.PadModeControls.SAMPLE1 || ctrl2===MixtrackPlatinumFX.PadModeControls.HOTCUE || ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS || ctrl2===MixtrackPlatinumFX.PadModeControls.AUTOLOOP) {
                 if (ctrl2===MixtrackPlatinumFX.PadModeControls.AUTOLOOP) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.AUTOLOOP3;
+                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.AUTOLOOP2;
                 }
                 if (ctrl2===MixtrackPlatinumFX.PadModeControls.SAMPLE1) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.KEYPLAY;
+                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.SAMPLE2;
                 }
                 if (ctrl2===MixtrackPlatinumFX.PadModeControls.HOTCUE) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.BEATJUMP;
+                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.HOTCUE2;
                 }
                 if (ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.FADERCUTS3;
+                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.FADERCUTS2;
                 }
                 this.longPressHeld = true;
 
