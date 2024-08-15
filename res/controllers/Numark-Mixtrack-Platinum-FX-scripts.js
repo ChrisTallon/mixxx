@@ -242,6 +242,13 @@ MixtrackPlatinumFX.init = function(id, debug) {
 
     engine.makeConnection("[Library]", "focused_widget", MixtrackPlatinumFX.libraryFocussedWidgetCallback);
 
+    // The above doesn't work with my Mixxx.
+    // Force remaining time display here
+    midi.sendShortMsg(0x90, 0x46, 0x7F);
+    midi.sendShortMsg(0x91, 0x46, 0x7F);
+    midi.sendShortMsg(0x92, 0x46, 0x7F);
+    midi.sendShortMsg(0x93, 0x46, 0x7F);
+
     MixtrackPlatinumFX.BlinkTimer = engine.beginTimer(MixtrackPlatinumFX.blinkDelay/2, MixtrackPlatinumFX.BlinkFunc);
 };
 
