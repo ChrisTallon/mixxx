@@ -177,22 +177,22 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>MoveVertical</key>
-                <description>MIDI Learned from 1 messages.</description>
+                <key>MixtrackPlatinumFX.browse.knob.input</key>
+                <description>Browse knob rotation - unshifted</description>
                 <status>0xBF</status>
                 <midino>0x00</midino>
                 <options>
-                    <selectknob/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Library]</group>
-                <key>ScrollVertical</key>
-                <description>MIDI Learned from 2 messages.</description>
+                <key>MixtrackPlatinumFX.browse.knob.input</key>
+                <description>Browse knob rotation - shifted</description>
                 <status>0xBF</status>
                 <midino>0x01</midino>
                 <options>
-                    <selectknob/>
+                    <script-binding/>
                 </options>
             </control>
             <control>

@@ -100,6 +100,9 @@ MixtrackPlatinumFX.trackBPM = function(value, group, _control) {
     MixtrackPlatinumFX.bpms[script.deckFromGroup(group) - 1] = engine.getValue(group, "bpm");
 };
 
+MixtrackPlatinumFX.mixxxFocussed = true;
+MixtrackPlatinumFX.saveLibraryFocussedWidget = 0;
+
 MixtrackPlatinumFX.BlinkTimer=0;
 MixtrackPlatinumFX.BlinkState=true;
 MixtrackPlatinumFX.BlinkStateSlow=true;
@@ -236,6 +239,8 @@ MixtrackPlatinumFX.init = function(id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinumFX.timeElapsedCallback);
     MixtrackPlatinumFX.initComplete=true;
     MixtrackPlatinumFX.updateArrows(true);
+
+    engine.makeConnection("[Library]", "focused_widget", MixtrackPlatinumFX.libraryFocussedWidgetCallback);
 
     MixtrackPlatinumFX.BlinkTimer = engine.beginTimer(MixtrackPlatinumFX.blinkDelay/2, MixtrackPlatinumFX.BlinkFunc);
 };
@@ -1561,24 +1566,50 @@ MixtrackPlatinumFX.Browse = function() {
                     engine.setParameter("[Channel2]", `waveform_zoom_${  direction}`, 1);
                 }
             } else {
-                if (this.speedTimer !== 0) {
-                    engine.stopTimer(this.speedTimer);
-                    this.speedTimer = 0;
+                const focussedLibraryWidget = engine.getValue("[Library]", "focused_widget");
+
+                if ((focussedLibraryWidget === 3) || (MixtrackPlatinumFX.saveLibraryFocussedWidget === 3)) {
+                    // Either (real focus is playlist) or (Mixxx is unfocussed and the playlist was last focussed)
+
+                    if (this.speedTimer !== 0) {
+                        engine.stopTimer(this.speedTimer);
+                        this.speedTimer = 0;
+                    }
+                    this.speedTimer = engine.beginTimer(100, function() {
+                        MixtrackPlatinumFX.browse.knob.speed = 0;
+                        MixtrackPlatinumFX.browse.knob.speedTimer = 0;
+                    }, true);
+                    this.speed++;
+                    direction = (value > 0x40) ? value - 0x80 : value;
+                    if (MixtrackPlatinumFX.shifted) {
+                        // when shifted go fast (consecutive squared!)
+                        direction *= this.speed*this.speed;
+                    } else {
+                        // normal, up to 3 consecutive do one for fine control, then speed up
+                        if (this.speed>3) { direction *= Math.min(4, (this.speed-3)); }
+                    }
+
+                    if (focussedLibraryWidget) {
+                        // Mixxx is focussed, use the recommended Control
+                        engine.setParameter("[Library]", "MoveVertical", direction);
+                    } else {
+                        // Mixxx is unfocussed - the above won't work. Instead use deprecated Controls
+                        // Hopefully this hack can be removed one day
+                        engine.setValue("[Playlist]", "SelectTrackKnob", direction);
+                    }
+                } else if (focussedLibraryWidget === 2) {
+                    // Mixxx is focussed on the side bar list, use the recommended Control
+                    engine.setParameter("[Library]", "MoveVertical", (value === 0x01) ? 1 : -1);
+                } else if (MixtrackPlatinumFX.saveLibraryFocussedWidget === 2) {
+                    // Mixxx is unfocussed as was last focussed on the side bar list
+                    // The above won't work. Instead use deprecated Controls
+                    // Hopefully this hack can be removed one day
+                    if (value === 0x01) {
+                        engine.setValue("[Playlist]", "SelectNextPlaylist", 1);
+                    } else if (value === 0x7F) {
+                        engine.setValue("[Playlist]", "SelectPrevPlaylist", 1);
+                    }
                 }
-                this.speedTimer = engine.beginTimer(100, function() {
-                    this.speed=0;
-                    this.speedTimer = 0;
-                }, true);
-                this.speed++;
-                direction = (value > 0x40) ? value - 0x80 : value;
-                if (MixtrackPlatinumFX.shifted) {
-                    // when shifted go fast (consecutive squared!)
-                    direction *= this.speed*this.speed;
-                } else {
-                    // normal, up to 3 consecutive do one for fine control, then speed up
-                    if (this.speed>3) { direction *= Math.min(4, (this.speed-3)); }
-                }
-                engine.setParameter("[Library]", "MoveVertical", direction);
             }
         }
     });
@@ -1601,18 +1632,58 @@ MixtrackPlatinumFX.Browse = function() {
                             this.previewing = true;
                         }
                     } else {
-                        script.triggerControl("[Library]", "GoToItem");
+                        if (MixtrackPlatinumFX.mixxxFocussed) {
+                            script.triggerControl("[Library]", "GoToItem");
+                        } else {
+                            // Mixxx is unfocussed, just handle shift-knob when on sidebar
+                            if ((MixtrackPlatinumFX.saveLibraryFocussedWidget === 2)) {
+                                engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", 1);
+                            }
+                        }
                     }
                 }
             };
         },
         unshift: function() {
-            this.input = components.Button.prototype.input;
-            this.inKey = "MoveFocusForward";
+            this.input = function(channel, control, value, _status, _group) {
+
+                if (value !== 0x7F) { return; } // Filter all except button-down event
+
+                if (MixtrackPlatinumFX.mixxxFocussed) {
+                    script.triggerControl("[Library]", "MoveFocusForward");
+                } else {
+                    // Mixxx is unfocussed
+                    switch (MixtrackPlatinumFX.saveLibraryFocussedWidget) {
+                    case 1: // Search box. Switch to side bar
+                        MixtrackPlatinumFX.saveLibraryFocussedWidget = 2;
+                        break;
+                    case 2: // Side bar. Switch to playlist
+                        MixtrackPlatinumFX.saveLibraryFocussedWidget = 3;
+                        break;
+                    case 3: // Playlist. Switch to search box
+                        MixtrackPlatinumFX.saveLibraryFocussedWidget = 1;
+                        break;
+                    }
+                }
+            };
         }
     });
 };
 MixtrackPlatinumFX.Browse.prototype = new components.ComponentContainer();
+
+MixtrackPlatinumFX.libraryFocussedWidgetCallback = function(value, _group, _control) {
+    if (!MixtrackPlatinumFX.mixxxFocussed) {
+        // Mixxx is regaining focus. Try to set the focus to where we think it is
+        engine.setValue("[Library]", "focused_widget", MixtrackPlatinumFX.saveLibraryFocussedWidget);
+        MixtrackPlatinumFX.mixxxFocussed = true;
+    }
+
+    if (value !== 0) { // Window is focussed - just save which widget is active
+        MixtrackPlatinumFX.saveLibraryFocussedWidget = value;
+    } else {
+        MixtrackPlatinumFX.mixxxFocussed = false;
+    }
+};
 
 MixtrackPlatinumFX.Gains = function() {
     this.mainGain = new components.Pot({
@@ -1692,7 +1763,6 @@ MixtrackPlatinumFX.wheelTurn = function(channel, control, value, status, group) 
         engine.setValue(group, "jog", newValue / MixtrackPlatinumFX.jogPitchSensitivity);
     }
 };
-
 
 MixtrackPlatinumFX.timeElapsedCallback = function(value, _group, _control) {
     // 0 = elapsed
