@@ -1610,6 +1610,11 @@ MixtrackPlatinumFX.Browse = function() {
                         engine.setValue("[Playlist]", "SelectPrevPlaylist", 1);
                     }
                 }
+                /*
+                } else if (MixtrackPlatinumFX.saveLibraryFocussedWidget === 1) {
+                    Is there a way to scroll the search box from here?
+                }
+*/
             }
         }
     });
@@ -1632,13 +1637,9 @@ MixtrackPlatinumFX.Browse = function() {
                             this.previewing = true;
                         }
                     } else {
-                        if (MixtrackPlatinumFX.mixxxFocussed) {
-                            script.triggerControl("[Library]", "GoToItem");
-                        } else {
-                            // Mixxx is unfocussed, just handle shift-knob when on sidebar
-                            if ((MixtrackPlatinumFX.saveLibraryFocussedWidget === 2)) {
-                                engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", 1);
-                            }
+                        // Just handle shift-knob when on sidebar
+                        if ((MixtrackPlatinumFX.saveLibraryFocussedWidget === 2)) {
+                            engine.setValue("[Playlist]", "ToggleSelectedSidebarItem", 1);
                         }
                     }
                 }
