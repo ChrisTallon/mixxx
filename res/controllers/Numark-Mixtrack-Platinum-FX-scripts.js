@@ -100,8 +100,8 @@ MixtrackPlatinumFX.trackBPM = function(value, group, _control) {
     MixtrackPlatinumFX.bpms[script.deckFromGroup(group) - 1] = engine.getValue(group, "bpm");
 };
 
-MixtrackPlatinumFX.mixxxFocussed = true;
-MixtrackPlatinumFX.saveLibraryFocussedWidget = 0;
+MixtrackPlatinumFX.mixxxFocussed = false;
+MixtrackPlatinumFX.saveLibraryFocussedWidget = 3;
 
 MixtrackPlatinumFX.BlinkTimer=0;
 MixtrackPlatinumFX.BlinkState=true;
