@@ -594,6 +594,7 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawAxis(&painter);
         drawWaveformPixmap(&painter);
         drawPlayedOverlay(&painter);
+        drawMinuteMarkers(&painter);
         drawPlayPosition(&painter);
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
@@ -671,6 +672,42 @@ void WOverview::drawWaveformPixmap(QPainter* pPainter) {
         }
 
         pPainter->drawImage(rect(), m_waveformImageScaled);
+    }
+}
+
+void WOverview::drawMinuteMarkers(QPainter* pPainter) {
+    if (!m_trackLoaded)
+        return;
+    WaveformWidgetFactory* widgetFactory = WaveformWidgetFactory::instance();
+    if (!widgetFactory->isOverviewMinuteMarkers())
+        return;
+
+    // Faster than track->getDuration() and already has playback speed ratio compensated for
+    double trackSeconds = samplePositionToSeconds(getTrackSamples());
+
+    QLineF line;
+    pPainter->setPen(QPen(m_axesColor, m_scaleFactor));
+    pPainter->setOpacity(1);
+
+    double overviewHeight = height();
+    double markerHeight = overviewHeight * 0.08;
+    double lowerMarkerYPos = overviewHeight * 0.92;
+    double currentMarkerXPos;
+    double currentMarkerSeconds = 60;
+    while (1) {
+        currentMarkerXPos = currentMarkerSeconds / trackSeconds * width();
+
+        if (m_orientation == Qt::Horizontal) {
+            line.setLine(currentMarkerXPos, 0.0, currentMarkerXPos, markerHeight);
+            pPainter->drawLine(line);
+            line.setLine(currentMarkerXPos, lowerMarkerYPos, currentMarkerXPos, overviewHeight);
+            pPainter->drawLine(line);
+        } else {
+            // ?
+        }
+        currentMarkerSeconds += 60;
+        if (currentMarkerSeconds > trackSeconds)
+            break;
     }
 }
 
