@@ -150,6 +150,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QCheckBox::toggled,
             this,
             &DlgPrefWaveform::slotSetNormalizeOverview);
+    connect(overviewMinuteMarkersCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetOverviewMinuteMarkers);
     connect(factory,
             &WaveformWidgetFactory::waveformMeasured,
             this,
@@ -220,6 +224,7 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
+    overviewMinuteMarkersCheckBox->setChecked(factory->isOverviewMinuteMarkers());
     // Round zoom to int to get a default zoom index.
     defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
@@ -369,6 +374,10 @@ void DlgPrefWaveform::slotSetVisualGainHigh(double gain) {
 
 void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
+}
+
+void DlgPrefWaveform::slotSetOverviewMinuteMarkers(bool minuteMarkers) {
+    WaveformWidgetFactory::instance()->setOverviewMinuteMarkers(minuteMarkers);
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
