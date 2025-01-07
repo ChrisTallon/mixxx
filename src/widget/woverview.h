@@ -76,6 +76,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void slotTypeControlChanged(double v);
     void slotNormalizeOrVisualGainChanged();
 
+    void slotMinuteMarkersChanged();
+
   private:
     // Append the waveform overview pixmap according to available data
     // in waveform
@@ -93,6 +95,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
+    void drawMinuteMarkers(QPainter* pPainter);
     void drawPlayedOverlay(QPainter* pPainter);
     void drawPlayPosition(QPainter* pPainter);
     void drawEndOfTrackFrame(QPainter* pPainter);

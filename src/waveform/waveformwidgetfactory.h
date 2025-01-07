@@ -148,6 +148,11 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
+    void setOverviewMinuteMarkers(bool minuteMarkers);
+    int isOverviewMinuteMarkers() const {
+        return m_overviewMinuteMarkers;
+    }
+
     const QVector<WaveformWidgetAbstractHandle>& getAvailableTypes() const {
         return m_waveformWidgetHandles;
     }
@@ -176,6 +181,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void overviewNormalizeChanged();
     void overallVisualGainChanged();
+
+    void overviewMinuteMarkersChanged();
 
   public slots:
     void slotSkinLoaded();
@@ -224,6 +231,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
+    bool m_overviewMinuteMarkers;
 
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;

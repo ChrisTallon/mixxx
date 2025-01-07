@@ -135,6 +135,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
           m_overviewNormalized(false),
+          m_overviewMinuteMarkers(false),
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
@@ -426,6 +427,17 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         setOverviewNormalized(static_cast<bool>(overviewNormalized));
     } else {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+    }
+
+    int overviewMinuteMarkers =
+            m_config->getValueString(
+                            ConfigKey("[Waveform]", "OverviewMinuteMarkers"))
+                    .toInt(&ok);
+    if (ok) {
+        setOverviewMinuteMarkers(static_cast<bool>(overviewMinuteMarkers));
+    } else {
+        m_config->set(ConfigKey("[Waveform]", "OverviewMinuteMarkers"),
+                ConfigValue(m_overviewMinuteMarkers));
     }
 
     m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
@@ -737,6 +749,15 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
     emit overviewNormalizeChanged();
+}
+
+void WaveformWidgetFactory::setOverviewMinuteMarkers(bool minuteMarkers) {
+    m_overviewMinuteMarkers = minuteMarkers;
+    if (m_config) {
+        m_config->set(ConfigKey("[Waveform]", "OverviewMinuteMarkers"),
+                ConfigValue(m_overviewMinuteMarkers));
+    }
+    emit overviewMinuteMarkersChanged();
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
