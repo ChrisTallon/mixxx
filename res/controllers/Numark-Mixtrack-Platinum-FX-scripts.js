@@ -15,7 +15,7 @@ MixtrackPlatinumFX.tapChangesTempo = true;
 // add/remove/modify steps to your liking
 // default step must be set in Mixxx settings
 // setting is stored per deck in pitchRange.currentRangeIdx
-MixtrackPlatinumFX.pitchRanges = [0.08, 0.16, 0.5];
+MixtrackPlatinumFX.pitchRanges = [0.04, 0.08, 0.16, 0.5];
 
 MixtrackPlatinumFX.HIGH_LIGHT = 0x7F;
 MixtrackPlatinumFX.LOW_LIGHT = 0x01;
