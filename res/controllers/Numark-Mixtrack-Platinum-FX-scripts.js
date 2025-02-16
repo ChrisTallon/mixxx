@@ -87,6 +87,10 @@ MixtrackPlatinumFX.faderCutSysex8 = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
 // enables only 4 top pads "fader cuts"
 MixtrackPlatinumFX.faderCutSysex4 = [0xF0, 0x00, 0x20, 0x7F, 0x13, 0xF7];
 
+// Loop button: Set to true for loop button to always set a 16 beat quantized loop
+MixtrackPlatinumFX.loopButton16Q = true;
+
+
 // state variable, don't touch
 MixtrackPlatinumFX.shifted = false;
 
@@ -782,7 +786,15 @@ MixtrackPlatinumFX.Deck = function(number) {
 
             if (!MixtrackPlatinumFX.shifted) {
                 if (engine.getValue(group, "loop_enabled") === 0) {
-                    script.triggerControl(group, "beatloop_activate");
+
+                    if (MixtrackPlatinumFX.loopButton16Q) {
+                        const quantizeBefore = engine.getParameter(group, "quantize");
+                        engine.setParameter(group, "quantize", 1);
+                        engine.setParameter(group, "beatloop_16_activate", 1);
+                        if (!quantizeBefore) { engine.setParameter(group, "quantize", 0); }
+                    } else {
+                        script.triggerControl(group, "beatloop_activate");
+                    }
                 } else {
                     script.triggerControl(group, "beatlooproll_activate");
                 }
