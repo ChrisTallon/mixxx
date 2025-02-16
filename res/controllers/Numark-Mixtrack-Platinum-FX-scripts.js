@@ -80,12 +80,15 @@ MixtrackPlatinumFX.PadModeControls = {
     FADERCUTS2: 0x03, // DUMMY not used by controller
     FADERCUTS3: 0x04, // DUMMY not used by controller
     AUTOLOOP3: 0x05, // DUMMY not used by controller
+    STEMS: 0x06, // DUMMY not used by controller (0x06 total guess)
 };
+
 
 // enables 4 bottom pads "fader cuts" for 8
 MixtrackPlatinumFX.faderCutSysex8 = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
 // enables only 4 top pads "fader cuts"
 MixtrackPlatinumFX.faderCutSysex4 = [0xF0, 0x00, 0x20, 0x7F, 0x13, 0xF7];
+
 
 // state variable, don't touch
 MixtrackPlatinumFX.shifted = false;
@@ -949,6 +952,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
     this.modes[MixtrackPlatinumFX.PadModeControls.KEYPLAY] = new MixtrackPlatinumFX.ModeKeyPlay(deckNumber, 2);
     this.modes[MixtrackPlatinumFX.PadModeControls.HOTCUE2] = new MixtrackPlatinumFX.ModeHotcue(deckNumber, 1);
     this.modes[MixtrackPlatinumFX.PadModeControls.AUTOLOOP3] = new MixtrackPlatinumFX.ModeCueLoop(deckNumber, 2);
+    this.modes[MixtrackPlatinumFX.PadModeControls.STEMS] = new MixtrackPlatinumFX.ModeStems(deckNumber);
 
     this.modeButtonPress = function(channel, control, value) {
         // always stop the time, its either the off, which should stop it
@@ -1007,7 +1011,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
             ctrl2=MixtrackPlatinumFX.PadModeControls.AUTOLOOP2;
         }
         if (ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS && MixtrackPlatinumFX.shifted) {
-            ctrl2=MixtrackPlatinumFX.PadModeControls.FADERCUTS2;
+            ctrl2=MixtrackPlatinumFX.PadModeControls.STEMS;
         }
 
         // this stops the timeout from setting another timer!
@@ -1466,8 +1470,60 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
         });
     }
 };
-
 MixtrackPlatinumFX.ModeFaderCuts.prototype = Object.create(components.ComponentContainer.prototype);
+
+
+MixtrackPlatinumFX.ModeStems = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.name = MixtrackPlatinumFX.PadModeControls.STEMS;
+    this.control = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
+    this.secondaryMode = 1;
+    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
+    //    this.lightOnValue = 0x7F;
+    this.lightOnValue = 0x09; // for "fader cuts" 0x09 works better than 0x7F for some reason (0x7F turns the other lamps to a bit brighter)
+
+    this.activate = function() {
+        midi.sendSysexMsg(MixtrackPlatinumFX.faderCutSysex4, MixtrackPlatinumFX.faderCutSysex4.length);
+
+    };
+
+    this.pads = new components.ComponentContainer();
+    for (let i = 0; i < 4; i++) { // Borrowed from fader cuts
+        this.pads[i] = new components.Button({
+            group: `[Channel${  deckNumber  }]`,
+            midi: [0x93 + deckNumber, 0x14 + i],
+            input: function(channel, control, value, _status, _group) {
+                this.output(value);
+            },
+            trigger: function() {
+                // in "fader cuts" mode pad lights need to be disabled manually,
+                // as pads are controlled by hardware or firmware in this mode
+                // and don't have associated controls. without this, lights from
+                // previously selected mode would still be on after changing mode
+                // to "fader cuts"
+                this.output(0);
+            },
+            outConnect: false,
+        });
+    }
+
+    for (let i = 4; i < 8; i++) {
+        this.pads[i] = new components.Button({
+            group: `[Channel${  deckNumber  }_Stem${i-3}]`,
+            midi: [0x93 + deckNumber, 0x14 + i],
+            key: "mute",
+            type: components.Button.prototype.types.toggle,
+            on: 0x01,
+            off: 0x7F,
+            outConnect: false
+        });
+    }
+};
+
+MixtrackPlatinumFX.ModeStems.prototype = Object.create(components.ComponentContainer.prototype);
+
+
 
 MixtrackPlatinumFX.ModeSample = function(deckNumber, secondaryMode) {
     components.ComponentContainer.call(this);
