@@ -1054,7 +1054,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
                     this.longPressMode=MixtrackPlatinumFX.PadModeControls.HOTCUE2;
                 }
                 if (ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.FADERCUTS2;
+                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.STEMS;
                 }
                 this.longPressHeld = true;
 
