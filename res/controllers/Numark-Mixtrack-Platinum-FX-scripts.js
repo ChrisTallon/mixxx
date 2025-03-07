@@ -66,23 +66,110 @@ MixtrackPlatinumFX.beatJumpValues = [
 // dim all lights when inactive instead of turning them off
 components.Button.prototype.off = MixtrackPlatinumFX.LOW_LIGHT;
 
-// pad modes control codes
+// Pad modes control codes
+// Let's define the pad mode buttons from left to right, A-D
+// These are the midi codes the Mixtrack sends
+// Sadly, shift B & shift C don't exist
 MixtrackPlatinumFX.PadModeControls = {
-    HOTCUE: 0x00,
-    AUTOLOOP: 0x0D,
-    FADERCUTS: 0x07,
-    SAMPLE1: 0x0B,
-    BEATJUMP: 0x01, // DUMMY not used by controller
-    SAMPLE2: 0x0F,
-    AUTOLOOP2: 0x0E, // DUMMY not used by controller
-    KEYPLAY: 0x0C, // DUMMY not used by controller
-    HOTCUE2: 0x02,
-    FADERCUTS2: 0x03, // DUMMY not used by controller
-    FADERCUTS3: 0x04, // DUMMY not used by controller
-    AUTOLOOP3: 0x05, // DUMMY not used by controller
-    STEMS: 0x06, // DUMMY not used by controller (0x06 total guess)
+    A: 0x00,
+    B: 0x0D,
+    C: 0x07,
+    D: 0x0B,
+    SHIFT_A: 0x02,
+    SHIFT_D: 0x0F,
+    NONE: 0xFF
 };
 
+// ID definitions for all the possible available modes
+// The numbers are arbitrary. Just make them all different. (enum)
+MixtrackPlatinumFX.PadModes = {
+    NONE: 0,
+    HOTCUES1: 1,
+    HOTCUES2: 2,
+    AUTOLOOP1: 3,
+    AUTOLOOP2: 4,
+    CUELOOP: 5,
+    FADERCUTS1: 6,
+    FADERCUTS2: 7,
+    FADERCUTS3: 8,
+    SAMPLE1: 9,
+    SAMPLE2: 10,
+    KEYPLAY: 11,
+    BEATJUMP: 12,
+    STEMS: 14
+};
+
+// Layer config. There are 6 pad mode layers:
+// Layer 0: Simply press the pad mode button
+// Layer 1: Hold shift and press the pad mode button
+// Layer 2: Long press the pad mode button
+// Layer 3: Double press the pad mode button
+// Layer 4: Shift and long press the pad mode button
+// Layer 5: Shift and double press the pad mode button
+
+// A, B, C, D are the 4 pad mode buttons from left to right
+
+/*
+MixtrackPlatinumFX.PadModeLayerConfig = {
+    A: [ MixtrackPlatinumFX.PadModes.HOTCUES1,       // Layer 0
+         MixtrackPlatinumFX.PadModes.HOTCUES2,       // Layer 1
+         MixtrackPlatinumFX.PadModes.BEATJUMP,       // Layer 2 ...
+        MixtrackPlatinumFX.PadModes.BEATJUMP,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+
+    B: [ MixtrackPlatinumFX.PadModes.AUTOLOOP1,
+         MixtrackPlatinumFX.PadModes.AUTOLOOP2,
+         MixtrackPlatinumFX.PadModes.CUELOOP,
+        MixtrackPlatinumFX.PadModes.CUELOOP,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+
+    C: [ MixtrackPlatinumFX.PadModes.FADERCUTS1,
+         MixtrackPlatinumFX.PadModes.FADERCUTS2,
+         MixtrackPlatinumFX.PadModes.FADERCUTS3,
+        MixtrackPlatinumFX.PadModes.FADERCUTS3,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+
+    D: [ MixtrackPlatinumFX.PadModes.SAMPLE1,
+         MixtrackPlatinumFX.PadModes.SAMPLE2,
+         MixtrackPlatinumFX.PadModes.KEYPLAY,
+        MixtrackPlatinumFX.PadModes.KEYPLAY,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+};
+*/
+
+MixtrackPlatinumFX.PadModeLayerConfig = {
+    A: [MixtrackPlatinumFX.PadModes.HOTCUES1,       // Layer 0
+        MixtrackPlatinumFX.PadModes.NONE,       // Layer 1
+        MixtrackPlatinumFX.PadModes.HOTCUES2,       // Layer 2 ...
+        MixtrackPlatinumFX.PadModes.BEATJUMP,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+
+    B: [MixtrackPlatinumFX.PadModes.AUTOLOOP1,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.AUTOLOOP2,
+        MixtrackPlatinumFX.PadModes.CUELOOP,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+
+    C: [MixtrackPlatinumFX.PadModes.FADERCUTS1,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.FADERCUTS2,
+        MixtrackPlatinumFX.PadModes.FADERCUTS3,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+
+    D: [MixtrackPlatinumFX.PadModes.SAMPLE1,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.SAMPLE2,
+        MixtrackPlatinumFX.PadModes.KEYPLAY,
+        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.NONE,],
+};
 
 // enables 4 bottom pads "fader cuts" for 8
 MixtrackPlatinumFX.faderCutSysex8 = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
@@ -945,6 +1032,7 @@ MixtrackPlatinumFX.Deck = function(number) {
 
 MixtrackPlatinumFX.Deck.prototype = new components.Deck();
 
+
 MixtrackPlatinumFX.PadSection = function(deckNumber) {
     components.ComponentContainer.call(this);
 
@@ -953,72 +1041,191 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
     this.longPressTimer = 0;
     this.longPressMode = 0;
     this.longPressHeld = false;
+    this.currentMode = MixtrackPlatinumFX.PadModes.NONE;
+    this.currentModeButton = MixtrackPlatinumFX.PadModeControls.NONE;
+    this.doubleFirstControl = MixtrackPlatinumFX.PadModeControls.NONE;
+    this.currentLayer = 0;
 
     // initialize leds
     const ledOff = components.Button.prototype.off;
     const ledOn = components.Button.prototype.on;
     midi.sendShortMsg(0x93 + deckNumber, 0x00, ledOn); // hotcue
     midi.sendShortMsg(0x93 + deckNumber, 0x0D, ledOff); // auto loop
-    midi.sendShortMsg(0x93 + deckNumber, 0x07, ledOff); // "fader cuts"
-    midi.sendShortMsg(0x93 + deckNumber, 0x0B, ledOff); // sample1
+    midi.sendShortMsg(0x93 + deckNumber, 0x07, ledOff); // fader cuts
+    midi.sendShortMsg(0x93 + deckNumber, 0x0B, ledOff); // sample
 
     // shifted leds
-    midi.sendShortMsg(0x93 + deckNumber, 0x0F, ledOff); // sample2
-    midi.sendShortMsg(0x93 + deckNumber, 0x02, ledOff); // beatjump
+    midi.sendShortMsg(0x93 + deckNumber, 0x02, ledOff); // hotcue
+    midi.sendShortMsg(0x93 + deckNumber, 0x0F, ledOff); // sample
 
+    // Instantiate objects for all possible pad modes
     this.modes = {};
-    this.modes[MixtrackPlatinumFX.PadModeControls.HOTCUE] = new MixtrackPlatinumFX.ModeHotcue(deckNumber, false);
-    this.modes[MixtrackPlatinumFX.PadModeControls.AUTOLOOP] = new MixtrackPlatinumFX.ModeAutoLoop(deckNumber, false);
-    this.modes[MixtrackPlatinumFX.PadModeControls.FADERCUTS] = new MixtrackPlatinumFX.ModeFaderCuts(deckNumber, false);
-    this.modes[MixtrackPlatinumFX.PadModeControls.FADERCUTS2] = new MixtrackPlatinumFX.ModeFaderCuts(deckNumber, 1);
-    this.modes[MixtrackPlatinumFX.PadModeControls.FADERCUTS3] = new MixtrackPlatinumFX.ModeFaderCuts(deckNumber, 2);
-    this.modes[MixtrackPlatinumFX.PadModeControls.SAMPLE1] = new MixtrackPlatinumFX.ModeSample(deckNumber, false);
-    this.modes[MixtrackPlatinumFX.PadModeControls.BEATJUMP] = new MixtrackPlatinumFX.ModeBeatjump(deckNumber, 2);
-    this.modes[MixtrackPlatinumFX.PadModeControls.SAMPLE2] = new MixtrackPlatinumFX.ModeSample(deckNumber, 1);
-    this.modes[MixtrackPlatinumFX.PadModeControls.AUTOLOOP2] = new MixtrackPlatinumFX.ModeAutoLoop(deckNumber, 1);
-    this.modes[MixtrackPlatinumFX.PadModeControls.KEYPLAY] = new MixtrackPlatinumFX.ModeKeyPlay(deckNumber, 2);
-    this.modes[MixtrackPlatinumFX.PadModeControls.HOTCUE2] = new MixtrackPlatinumFX.ModeHotcue(deckNumber, 1);
-    this.modes[MixtrackPlatinumFX.PadModeControls.AUTOLOOP3] = new MixtrackPlatinumFX.ModeCueLoop(deckNumber, 2);
-    this.modes[MixtrackPlatinumFX.PadModeControls.STEMS] = new MixtrackPlatinumFX.ModeStems(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.HOTCUES1] = new MixtrackPlatinumFX.ModeHotcue(deckNumber, MixtrackPlatinumFX.PadModes.HOTCUES1);
+    this.modes[MixtrackPlatinumFX.PadModes.HOTCUES2] = new MixtrackPlatinumFX.ModeHotcue(deckNumber, MixtrackPlatinumFX.PadModes.HOTCUES2);
+    this.modes[MixtrackPlatinumFX.PadModes.AUTOLOOP1] = new MixtrackPlatinumFX.ModeAutoLoop(deckNumber, MixtrackPlatinumFX.PadModes.AUTOLOOP1);
+    this.modes[MixtrackPlatinumFX.PadModes.AUTOLOOP2] = new MixtrackPlatinumFX.ModeAutoLoop(deckNumber, MixtrackPlatinumFX.PadModes.AUTOLOOP2);
+    this.modes[MixtrackPlatinumFX.PadModes.CUELOOP] = new MixtrackPlatinumFX.ModeCueLoop(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.FADERCUTS1] = new MixtrackPlatinumFX.ModeFaderCuts(deckNumber, MixtrackPlatinumFX.PadModes.FADERCUTS1);
+    this.modes[MixtrackPlatinumFX.PadModes.FADERCUTS2] = new MixtrackPlatinumFX.ModeFaderCuts(deckNumber, MixtrackPlatinumFX.PadModes.FADERCUTS2);
+    this.modes[MixtrackPlatinumFX.PadModes.FADERCUTS3] = new MixtrackPlatinumFX.ModeFaderCuts(deckNumber, MixtrackPlatinumFX.PadModes.FADERCUTS3);
+    this.modes[MixtrackPlatinumFX.PadModes.SAMPLE1] = new MixtrackPlatinumFX.ModeSample(deckNumber, MixtrackPlatinumFX.PadModes.SAMPLE1);
+    this.modes[MixtrackPlatinumFX.PadModes.SAMPLE2] = new MixtrackPlatinumFX.ModeSample(deckNumber, MixtrackPlatinumFX.PadModes.SAMPLE2);
+    this.modes[MixtrackPlatinumFX.PadModes.BEATJUMP] = new MixtrackPlatinumFX.ModeBeatjump(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.KEYPLAY] = new MixtrackPlatinumFX.ModeKeyPlay(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.STEMS] = new MixtrackPlatinumFX.ModeStems(deckNumber);
+
 
     this.modeButtonPress = function(channel, control, value) {
-        // always stop the time, its either the off, which should stop it
-        // or another button has been pressed, so that's now the "focus"
-        if (this.longPressTimer!==0) {
-            // release button, leave the timer going, but mark as not held so it won't go off (still using it for double press)
+        let press = false;
+        let release = false;
+        let doublePress = false;
+        let timerExists = (this.longPressTimer !== 0);
+        let shift = MixtrackPlatinumFX.shifted;
+
+        // Standardise SHIFT_A & SHIFT_D (we already know shift)
+        if      (control === MixtrackPlatinumFX.PadModeControls.SHIFT_A) control = MixtrackPlatinumFX.PadModeControls.A;
+        else if (control === MixtrackPlatinumFX.PadModeControls.SHIFT_D) control = MixtrackPlatinumFX.PadModeControls.D;
+
+        if (value === 0x7F) press = true;
+        else release = true;
+
+        if (press && timerExists) doublePress = true;
+
+        if (release) {
             this.longPressHeld = false;
-            if (value === 0x7F) {
-                engine.stopTimer(this.longPressTimer);
-                // there was a time, see if its for this button, if it is then this is a double press so active the same as if it has been a long press
-                // cancel the timer eitherway
-                if (control===MixtrackPlatinumFX.PadModeControls.SAMPLE1 && this.longPressMode===MixtrackPlatinumFX.PadModeControls.SAMPLE2) {
-                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.KEYPLAY);
-                    this.longPressTimer = 0;
-                    return;
-                }
-                if (control===MixtrackPlatinumFX.PadModeControls.HOTCUE && this.longPressMode===MixtrackPlatinumFX.PadModeControls.HOTCUE2) {
-                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.BEATJUMP);
-                    this.longPressTimer = 0;
-                    return;
-                }
-                if (control===MixtrackPlatinumFX.PadModeControls.FADERCUTS && this.longPressMode===MixtrackPlatinumFX.PadModeControls.FADERCUTS2) {
-                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.FADERCUTS3);
-                    this.longPressTimer = 0;
-                    return;
-                }
-                if (control===MixtrackPlatinumFX.PadModeControls.AUTOLOOP && this.longPressMode===MixtrackPlatinumFX.PadModeControls.AUTOLOOP2) {
-                    this.setMode(channel, MixtrackPlatinumFX.PadModeControls.AUTOLOOP3);
-                    this.longPressTimer = 0;
-                    return;
-                }
-                this.longPressTimer = 0;
+            return;
+        }
+
+        if (shift && (control === MixtrackPlatinumFX.PadModeControls.D)
+            && (this.currentMode === this.modes[MixtrackPlatinumFX.PadModes.KEYPLAY])) {
+            // In this specific case we aren't setting a mode, we change the parameter for pitch play start
+            this.currentMode.nextRange();
+            return;
+        }
+
+        const doublePressSame = doublePress && (control === this.doubleFirstControl);
+
+        if (doublePress) {
+            engine.stopTimer(this.longPressTimer);
+            this.longPressTimer = 0;
+        }
+
+        if (!doublePressSame) { // Not a double press on the same button
+            // First press
+            this.longPressHeld = true;
+
+            this.doubleFirstControl = control;
+
+            // Start the long press timer
+            const refToPadModeObject = this; // Can't use 'this' in function below
+            this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout/**2*/, function() {
+                    refToPadModeObject.longPressTimer = 0;
+
+                    if (refToPadModeObject.longPressHeld) {
+                        // If we get to here the timer has expired and the button is still held, go to layer 2
+                        refToPadModeObject.longPressHeld = false;
+
+                        if (shift)
+                            refToPadModeObject.setMode(channel, control, 4); // Layer 4, shift-long press
+                        else
+                            refToPadModeObject.setMode(channel, control, 2); // Layer 2, long press
+                    }
+                }, true);
+        }
+
+        let desiredLayer = 0;
+
+        if (shift) {
+            if (doublePressSame) desiredLayer = 5;
+            else                 desiredLayer = 1;
+        } else {
+            if (doublePressSame) desiredLayer = 3;
+            else                 desiredLayer = 0;
+        }
+
+        this.setMode(channel, control, desiredLayer);
+    };
+
+    this.setMode = function(channel, control, desiredLayer) {
+        // channel = which deck. control = which mode button was pressed. desiredLayer = standard/shifted/longpress/doublepress
+
+        // Look up the new mode from the arrays
+        let newModeIndex = MixtrackPlatinumFX.PadModes.NONE;
+
+        switch(control) {
+            case MixtrackPlatinumFX.PadModeControls.A:
+                newModeIndex = MixtrackPlatinumFX.PadModeLayerConfig.A[desiredLayer];
+                break;
+            case MixtrackPlatinumFX.PadModeControls.B:
+                newModeIndex = MixtrackPlatinumFX.PadModeLayerConfig.B[desiredLayer];
+                break;
+            case MixtrackPlatinumFX.PadModeControls.C:
+                newModeIndex = MixtrackPlatinumFX.PadModeLayerConfig.C[desiredLayer];
+                break;
+            case MixtrackPlatinumFX.PadModeControls.D:
+                newModeIndex = MixtrackPlatinumFX.PadModeLayerConfig.D[desiredLayer];
+                break;
+        }
+
+        if (newModeIndex === MixtrackPlatinumFX.PadModes.NONE) {
+            return;
+        }
+
+        // Now convert integer from array to the actual mode object
+        let newMode = this.modes[newModeIndex];
+
+        if (newMode === this.currentMode) return;
+
+        if (this.currentMode !== MixtrackPlatinumFX.PadModes.NONE) {
+            this.currentMode.forEachComponent(function(component) {
+                component.disconnect();
+            });
+        }
+
+        if (MixtrackPlatinumFX.enableBlink) {
+            // stop blinking if old mode was layer > 0 (shift ...)
+            if (this.currentLayer !== 0) {
+                this.blinkLedOff();
+
+                // disable light on the old control in case it ended up in 0x7F state
+                midi.sendShortMsg(0x90 + channel, this.currentModeButton, 0x01);
             }
         }
 
-        if (value !== 0x7F) {
-            return;
+        // light off on old mode select button
+        if (this.currentModeButton != MixtrackPlatinumFX.PadModeControls.NONE) {
+            midi.sendShortMsg(0x90 + channel, this.currentModeButton, 0x01);
         }
-        this.setMode(channel, control);
+
+        // Switch the mode here
+        this.currentMode = newMode;
+        this.currentLayer = desiredLayer;
+        this.currentModeButton = control;
+
+        // set the correct shift state for new mode
+        if (this.isShifted) {
+            this.currentMode.shift();
+        } else {
+            this.currentMode.unshift();
+        }
+
+        this.currentMode.forEachComponent(function(component) {
+            component.connect();
+            component.trigger();
+        });
+        if (this.currentMode.activate) {
+            this.currentMode.activate();
+        }
+
+        if (MixtrackPlatinumFX.enableBlink) {
+            // start blinking if new mode is a secondary mode
+            if (this.currentLayer !== 0) {
+                this.blinkLedOn(0x90 + channel, this.currentModeButton, this.currentMode.lightOnValue, (this.currentLayer === 2));
+            }
+        }
+
+        // light on on new mode select button
+        midi.sendShortMsg(0x90 + channel, this.currentModeButton, this.currentMode.lightOnValue);
     };
 
     this.padPress = function(channel, control, value, status, group) {
@@ -1026,103 +1233,12 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
         this.currentMode.pads[i].input(channel, control, value, status, group);
     };
 
-    this.setMode = function(channel, control) {
-        let ctrl2=control;
-        if (ctrl2===MixtrackPlatinumFX.PadModeControls.SAMPLE2 && this.currentMode.name===MixtrackPlatinumFX.PadModeControls.KEYPLAY) {
-            // this specific case we aren't setting a mode, we change the parameter for pitch play start
-            this.currentMode.nextRange();
-            return;
-        }
-        // The mixer doesn't consider these to have shift, so we have to make it up by looking at shift and the original key
-        if (ctrl2===MixtrackPlatinumFX.PadModeControls.AUTOLOOP && MixtrackPlatinumFX.shifted) {
-            ctrl2=MixtrackPlatinumFX.PadModeControls.AUTOLOOP2;
-        }
-        if (ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS && MixtrackPlatinumFX.shifted) {
-            ctrl2=MixtrackPlatinumFX.PadModeControls.STEMS;
-        }
-
-        // this stops the timeout from setting another timer!
-        if (this.longPressTimer===0) {
-            if (ctrl2===MixtrackPlatinumFX.PadModeControls.SAMPLE1 || ctrl2===MixtrackPlatinumFX.PadModeControls.HOTCUE || ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS || ctrl2===MixtrackPlatinumFX.PadModeControls.AUTOLOOP) {
-                if (ctrl2===MixtrackPlatinumFX.PadModeControls.AUTOLOOP) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.AUTOLOOP2;
-                }
-                if (ctrl2===MixtrackPlatinumFX.PadModeControls.SAMPLE1) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.SAMPLE2;
-                }
-                if (ctrl2===MixtrackPlatinumFX.PadModeControls.HOTCUE) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.HOTCUE2;
-                }
-                if (ctrl2===MixtrackPlatinumFX.PadModeControls.FADERCUTS) {
-                    this.longPressMode=MixtrackPlatinumFX.PadModeControls.STEMS;
-                }
-                this.longPressHeld = true;
-
-                const thirdaryMode = this; // Can't use 'this' in function below
-                this.longPressTimer = engine.beginTimer(components.Button.prototype.longPressTimeout/**2*/, function() {
-                    if (thirdaryMode.longPressHeld) {
-                        thirdaryMode.setMode(channel, thirdaryMode.longPressMode);
-                    }
-                    thirdaryMode.longPressTimer = 0;
-                    thirdaryMode.longPressHeld = false;
-                }, true);
-            }
-        }
-
-        const newMode = this.modes[ctrl2];
-        if ((this.currentMode.control === newMode.control) && (this.currentMode.secondaryMode === newMode.secondaryMode)) {
-            return; // selected mode already set, no need to change anything
-        }
-
-        this.currentMode.forEachComponent(function(component) {
-            component.disconnect();
-        });
-
-        // set the correct shift state for new mode
-        if (this.isShifted) {
-            newMode.shift();
-        } else {
-            newMode.unshift();
-        }
-
-        newMode.forEachComponent(function(component) {
-            component.connect();
-            component.trigger();
-        });
-        if (newMode.activate) {
-            newMode.activate();
-        }
-
-        if (MixtrackPlatinumFX.enableBlink) {
-            // stop blinking if old mode was secondary mode
-            if (this.currentMode.secondaryMode) {
-                this.blinkLedOff();
-
-                // disable light on the old control in case it ended up in 0x7F state
-                midi.sendShortMsg(0x90 + channel, this.currentMode.unshiftedControl, 0x01);
-            }
-
-            // start blinking if new mode is a secondary mode
-            if (newMode.secondaryMode) {
-                this.blinkLedOn(0x90 + channel, newMode.unshiftedControl, newMode.lightOnValue, newMode.secondaryMode);
-            }
-        }
-
-        // light off on old mode select button
-        midi.sendShortMsg(0x90 + channel, this.currentMode.control, 0x01);
-
-        // light on on new mode select button
-        midi.sendShortMsg(0x90 + channel, newMode.control, newMode.lightOnValue);
-
-        this.currentMode = newMode;
-    };
-
     // start an infinite timer that toggles led state
-    this.blinkLedOn = function(midi1, midi2, onVal, secondMode) {
+    this.blinkLedOn = function(midi1, midi2, onVal, slow) {
         this.blinkLedOff();
         this.blinkTimer = MixtrackPlatinumFX.BlinkStart(function(isOn) {
             midi.sendShortMsg(midi1, midi2, isOn ? onVal : 0x01);
-        }, (secondMode!==2));
+        }, slow);
     };
 
     // stop the blink timer
@@ -1141,25 +1257,19 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
         }
     };
 
-    this.currentMode = this.modes[MixtrackPlatinumFX.PadModeControls.HOTCUE];
+    // Set initial mode to the first layer on button A
+    this.setMode(deckNumber + 3, MixtrackPlatinumFX.PadModeControls.A, 0); // midi channels are 4,5,6,7
 };
 MixtrackPlatinumFX.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
 
-MixtrackPlatinumFX.ModeHotcue = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeHotcue = function(deckNumber, exactMode) {
     components.ComponentContainer.call(this);
 
-    this.control = MixtrackPlatinumFX.PadModeControls.HOTCUE;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.HOTCUE;
-    this.secondaryMode = secondaryMode;
     this.lightOnValue = 0x7F;
 
-    this.name = MixtrackPlatinumFX.PadModeControls.HOTCUE;
-    let offset=0;
-    if (secondaryMode===1) {
-        this.name = MixtrackPlatinumFX.PadModeControls.HOTCUE2;
-        this.control = MixtrackPlatinumFX.PadModeControls.HOTCUE2;
-        offset=8;
-    }
+    let offset = 0;
+    if (exactMode === MixtrackPlatinumFX.PadModes.HOTCUES2) offset = 8;
+
     this.pads = new components.ComponentContainer();
     for (let i = 0; i < 8; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -1175,16 +1285,9 @@ MixtrackPlatinumFX.ModeHotcue = function(deckNumber, secondaryMode) {
 };
 MixtrackPlatinumFX.ModeHotcue.prototype = Object.create(components.ComponentContainer.prototype);
 
-MixtrackPlatinumFX.ModeAutoLoop = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeAutoLoop = function(deckNumber, exactMode) {
     components.ComponentContainer.call(this);
 
-    this.name = MixtrackPlatinumFX.PadModeControls.AUTOLOOP;
-    if (secondaryMode) {
-        this.name = MixtrackPlatinumFX.PadModeControls.AUTOLOOP2;
-    }
-    this.control = MixtrackPlatinumFX.PadModeControls.AUTOLOOP;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.AUTOLOOP;
-    this.secondaryMode = secondaryMode;
     this.lightOnValue = 0x7F;
 
     this.pads = new components.ComponentContainer();
@@ -1197,19 +1300,19 @@ MixtrackPlatinumFX.ModeAutoLoop = function(deckNumber, secondaryMode) {
             sendShifted: true,
             shiftOffset: 0x08,
             shift: function() {
-                if (!secondaryMode) {
+                if (exactMode === MixtrackPlatinumFX.PadModes.AUTOLOOP1) {
                     this.inKey = `beatlooproll_${  this.size  }_activate`;
                     this.outKey = `beatlooproll_${  this.size  }_activate`;
-                } else {
+                } else { // AUTOLOOP2
                     this.inKey = `beatloop_${  this.size  }_toggle`;
                     this.outKey = `beatloop_${  this.size  }_enabled`;
                 }
             },
             unshift: function() {
-                if (!secondaryMode) {
+                if (exactMode === MixtrackPlatinumFX.PadModes.AUTOLOOP1) {
                     this.inKey = `beatloop_${  this.size  }_toggle`;
                     this.outKey = `beatloop_${  this.size  }_enabled`;
-                } else {
+                } else { // AUTOLOOP2
                     this.inKey = `beatlooproll_${  this.size  }_activate`;
                     this.outKey = `beatlooproll_${  this.size  }_activate`;
                 }
@@ -1220,16 +1323,9 @@ MixtrackPlatinumFX.ModeAutoLoop = function(deckNumber, secondaryMode) {
 };
 MixtrackPlatinumFX.ModeAutoLoop.prototype = Object.create(components.ComponentContainer.prototype);
 
-MixtrackPlatinumFX.ModeCueLoop = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeCueLoop = function(deckNumber) {
     components.ComponentContainer.call(this);
 
-    this.name = MixtrackPlatinumFX.PadModeControls.AUTOLOOP;
-    if (secondaryMode) {
-        this.name = MixtrackPlatinumFX.PadModeControls.AUTOLOOP3;
-    }
-    this.control = MixtrackPlatinumFX.PadModeControls.AUTOLOOP;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.AUTOLOOP;
-    this.secondaryMode = secondaryMode;
     this.lightOnValue = 0x7F;
 
     this.pads = new components.ComponentContainer();
@@ -1270,13 +1366,9 @@ MixtrackPlatinumFX.ModeCueLoop = function(deckNumber, secondaryMode) {
 MixtrackPlatinumFX.ModeCueLoop.prototype = Object.create(components.ComponentContainer.prototype);
 
 MixtrackPlatinumFX.mykey=0;
-MixtrackPlatinumFX.ModeKeyPlay = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeKeyPlay = function(deckNumber) {
     components.ComponentContainer.call(this);
 
-    this.name = MixtrackPlatinumFX.PadModeControls.KEYPLAY;
-    this.control = MixtrackPlatinumFX.PadModeControls.SAMPLE1;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.SAMPLE1;
-    this.secondaryMode = secondaryMode;
     this.lightOnValue = 0x7F;
 
     this.nextRange = function() {
@@ -1352,32 +1444,22 @@ MixtrackPlatinumFX.ModeKeyPlay.prototype = Object.create(components.ComponentCon
 // when pads are in "fader cuts" mode, they rapidly move the crossfader.
 // holding a pad activates a "fader cut", releasing it causes the GUI crossfader
 // to return to the position of physical crossfader
-MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, exactMode) {
     components.ComponentContainer.call(this);
 
-    this.name = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
-    if (secondaryMode===1) {
-        this.name = MixtrackPlatinumFX.PadModeControls.FADERCUTS2;
-    }
-    if (secondaryMode===2) {
-        this.name = MixtrackPlatinumFX.PadModeControls.FADERCUTS3;
-    }
-    this.control = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
-    this.secondaryMode = secondaryMode;
     this.lightOnValue = 0x09; // for "fader cuts" 0x09 works better than 0x7F for some reason (0x7F turns the other lamps to a bit brighter)
 
     this.activate = function() {
-        if (this.secondaryMode===1) {
+        // fadercut pads are controlled by hardware of firmware in this mode
+        if (exactMode === MixtrackPlatinumFX.PadModes.FADERCUTS2) {
             midi.sendSysexMsg(MixtrackPlatinumFX.faderCutSysex8, MixtrackPlatinumFX.faderCutSysex8.length);
         } else {
             midi.sendSysexMsg(MixtrackPlatinumFX.faderCutSysex4, MixtrackPlatinumFX.faderCutSysex4.length);
         }
     };
 
-    // fadercut pads are controlled by hardware of firmware in this mode
     let numFader=4;
-    if (secondaryMode===1) {
+    if (exactMode === MixtrackPlatinumFX.PadModes.FADERCUTS2) {
         numFader=8;
     }
     this.pads = new components.ComponentContainer();
@@ -1400,7 +1482,7 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
             outConnect: false,
         });
     }
-    if (secondaryMode===false) {
+    if (exactMode === MixtrackPlatinumFX.PadModes.FADERCUTS1) {
         i=4;
         this.pads[i] = new components.Button({
             group: `[Channel${  deckNumber  }]`,
@@ -1430,7 +1512,7 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
             outConnect: false,
         });
     }
-    if (secondaryMode===2) {
+    if (exactMode === MixtrackPlatinumFX.PadModes.FADERCUTS3) {
         i=4;
         this.pads[i] = new components.Button({
             group: `[Channel${  deckNumber  }]`,
@@ -1503,10 +1585,6 @@ MixtrackPlatinumFX.ModeFaderCuts.prototype = Object.create(components.ComponentC
 MixtrackPlatinumFX.ModeStems = function(deckNumber) {
     components.ComponentContainer.call(this);
 
-    this.name = MixtrackPlatinumFX.PadModeControls.STEMS;
-    this.control = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
-    this.secondaryMode = 1;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.FADERCUTS;
     //    this.lightOnValue = 0x7F;
     this.lightOnValue = 0x09; // for "fader cuts" 0x09 works better than 0x7F for some reason (0x7F turns the other lamps to a bit brighter)
 
@@ -1547,28 +1625,20 @@ MixtrackPlatinumFX.ModeStems = function(deckNumber) {
         });
     }
 };
-
 MixtrackPlatinumFX.ModeStems.prototype = Object.create(components.ComponentContainer.prototype);
 
-
-
-MixtrackPlatinumFX.ModeSample = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeSample = function(deckNumber, exactMode) {
     components.ComponentContainer.call(this);
 
-    if (!secondaryMode) {
+    this.lightOnValue = 0x7F;
+
+    if (exactMode === MixtrackPlatinumFX.PadModes.SAMPLE1) {
         // samples 1-8
-        this.name = MixtrackPlatinumFX.PadModeControls.SAMPLE1;
-        this.control = MixtrackPlatinumFX.PadModeControls.SAMPLE1;
         this.firstSampleNumber = 1;
-    } else {
+    } else { // SAMPLE2
         // samples 9-16
-        this.name = MixtrackPlatinumFX.PadModeControls.SAMPLE2;
-        this.control = MixtrackPlatinumFX.PadModeControls.SAMPLE2;
-        this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.SAMPLE1;
         this.firstSampleNumber = 9;
     }
-    this.secondaryMode = secondaryMode;
-    this.lightOnValue = 0x7F;
 
     this.pads = new components.ComponentContainer();
     for (let i = 0; i < 8; i++) {
@@ -1587,13 +1657,9 @@ MixtrackPlatinumFX.ModeSample = function(deckNumber, secondaryMode) {
 };
 MixtrackPlatinumFX.ModeSample.prototype = Object.create(components.ComponentContainer.prototype);
 
-MixtrackPlatinumFX.ModeBeatjump = function(deckNumber, secondaryMode) {
+MixtrackPlatinumFX.ModeBeatjump = function(deckNumber) {
     components.ComponentContainer.call(this);
 
-    this.name = MixtrackPlatinumFX.PadModeControls.BEATJUMP;
-    this.control = MixtrackPlatinumFX.PadModeControls.HOTCUE;
-    this.secondaryMode = secondaryMode;
-    this.unshiftedControl = MixtrackPlatinumFX.PadModeControls.HOTCUE;
     this.lightOnValue = 0x7F;
 
     this.pads = new components.ComponentContainer();
@@ -1624,6 +1690,7 @@ MixtrackPlatinumFX.ModeBeatjump = function(deckNumber, secondaryMode) {
     }
 };
 MixtrackPlatinumFX.ModeBeatjump.prototype = Object.create(components.ComponentContainer.prototype);
+
 
 MixtrackPlatinumFX.Browse = function() {
     this.knob = new components.Encoder({
