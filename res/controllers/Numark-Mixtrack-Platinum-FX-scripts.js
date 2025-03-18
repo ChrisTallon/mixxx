@@ -96,6 +96,7 @@ MixtrackPlatinumFX.PadModes = {
     SAMPLE2: 10,
     KEYPLAY: 11,
     BEATJUMP: 12,
+    BEATJUMP2: 13,
     STEMS: 14
 };
 
@@ -147,7 +148,7 @@ MixtrackPlatinumFX.PadModeLayerConfig = {
         MixtrackPlatinumFX.PadModes.HOTCUES2,       // Layer 2 ...
         MixtrackPlatinumFX.PadModes.BEATJUMP,
         MixtrackPlatinumFX.PadModes.NONE,
-        MixtrackPlatinumFX.PadModes.NONE,],
+        MixtrackPlatinumFX.PadModes.BEATJUMP2,],
 
     B: [MixtrackPlatinumFX.PadModes.AUTOLOOP1,
         MixtrackPlatinumFX.PadModes.NONE,
@@ -1071,6 +1072,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
     this.modes[MixtrackPlatinumFX.PadModes.SAMPLE1] = new MixtrackPlatinumFX.ModeSample(deckNumber, MixtrackPlatinumFX.PadModes.SAMPLE1);
     this.modes[MixtrackPlatinumFX.PadModes.SAMPLE2] = new MixtrackPlatinumFX.ModeSample(deckNumber, MixtrackPlatinumFX.PadModes.SAMPLE2);
     this.modes[MixtrackPlatinumFX.PadModes.BEATJUMP] = new MixtrackPlatinumFX.ModeBeatjump(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.BEATJUMP2] = new MixtrackPlatinumFX.ModeBeatjump2(deckNumber);
     this.modes[MixtrackPlatinumFX.PadModes.KEYPLAY] = new MixtrackPlatinumFX.ModeKeyPlay(deckNumber);
     this.modes[MixtrackPlatinumFX.PadModes.STEMS] = new MixtrackPlatinumFX.ModeStems(deckNumber);
 
@@ -1690,6 +1692,51 @@ MixtrackPlatinumFX.ModeBeatjump = function(deckNumber) {
     }
 };
 MixtrackPlatinumFX.ModeBeatjump.prototype = Object.create(components.ComponentContainer.prototype);
+
+MixtrackPlatinumFX.ModeBeatjump2 = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.lightOnValue = 0x7F;
+
+    let beatJump2Values = [
+        "beatjump_4_backward",
+        "beatjump_4_forward",
+        "beatjump_8_backward",
+        "beatjump_8_forward",
+        "beatjump_16_backward",
+        "beatjump_16_forward",
+        "beatjump_32_backward",
+        "beatjump_32_forward"
+        ];
+
+    this.pads = new components.ComponentContainer();
+    for (let i = 0; i < 8; i++) {
+        this.pads[i] = new components.Button({
+            group: `[Channel${  deckNumber  }]`,
+            midi: [0x93 + deckNumber, 0x14 + i],
+            size: beatJump2Values[i],
+            shiftControl: true,
+            sendShifted: true,
+            shiftOffset: 0x08,
+            shift: function() {
+                this.disconnect();
+                this.inKey = this.size;
+                this.outKey = this.size;
+                this.connect();
+                this.trigger();
+            },
+            unshift: function() {
+                this.disconnect();
+                this.inKey = this.size;
+                this.outKey = this.size;
+                this.connect();
+                this.trigger();
+            },
+            outConnect: false
+        });
+    }
+};
+MixtrackPlatinumFX.ModeBeatjump2.prototype = Object.create(components.ComponentContainer.prototype);
 
 
 MixtrackPlatinumFX.Browse = function() {
