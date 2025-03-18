@@ -97,7 +97,8 @@ MixtrackPlatinumFX.PadModes = {
     KEYPLAY: 11,
     BEATJUMP: 12,
     BEATJUMP2: 13,
-    STEMS: 14
+    STEMS: 14,
+    CUSTOM1: 15
 };
 
 // Layer config. There are 6 pad mode layers:
@@ -150,8 +151,8 @@ MixtrackPlatinumFX.PadModeLayerConfig = {
         MixtrackPlatinumFX.PadModes.NONE,
         MixtrackPlatinumFX.PadModes.BEATJUMP2,],
 
-    B: [MixtrackPlatinumFX.PadModes.AUTOLOOP1,
-        MixtrackPlatinumFX.PadModes.NONE,
+    B: [MixtrackPlatinumFX.PadModes.CUSTOM1,
+        MixtrackPlatinumFX.PadModes.AUTOLOOP1,
         MixtrackPlatinumFX.PadModes.AUTOLOOP2,
         MixtrackPlatinumFX.PadModes.CUELOOP,
         MixtrackPlatinumFX.PadModes.NONE,
@@ -171,6 +172,21 @@ MixtrackPlatinumFX.PadModeLayerConfig = {
         MixtrackPlatinumFX.PadModes.NONE,
         MixtrackPlatinumFX.PadModes.NONE,],
 };
+
+/*
+ * New CUSTOM1 mode:
+ *
+ * 1: 1/8 beat slip roll from AUTOLOOP2
+ * 2: 1/4 beat slip roll from AUTOLOOP2
+ * 3: 1/2 beat slip roll from AUTOLOOP2
+ * 4: 1   beat slip roll from AUTOLOOP2
+ * 5: slip reverse
+ * 6: start of track
+ * 7: rev?
+ * 8: ffwd?
+ *
+ */
+
 
 // enables 4 bottom pads "fader cuts" for 8
 MixtrackPlatinumFX.faderCutSysex8 = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
@@ -1075,6 +1091,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
     this.modes[MixtrackPlatinumFX.PadModes.BEATJUMP2] = new MixtrackPlatinumFX.ModeBeatjump2(deckNumber);
     this.modes[MixtrackPlatinumFX.PadModes.KEYPLAY] = new MixtrackPlatinumFX.ModeKeyPlay(deckNumber);
     this.modes[MixtrackPlatinumFX.PadModes.STEMS] = new MixtrackPlatinumFX.ModeStems(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.CUSTOM1] = new MixtrackPlatinumFX.ModeCustom1(deckNumber);
 
 
     this.modeButtonPress = function(channel, control, value) {
@@ -1737,6 +1754,82 @@ MixtrackPlatinumFX.ModeBeatjump2 = function(deckNumber) {
     }
 };
 MixtrackPlatinumFX.ModeBeatjump2.prototype = Object.create(components.ComponentContainer.prototype);
+
+
+MixtrackPlatinumFX.ModeCustom1 = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.lightOnValue = 0x7F;
+
+    this.pads = new components.ComponentContainer();
+
+    const button = {
+        group: `[Channel${  deckNumber  }]`,
+        shiftControl: false,
+        midi: 0,
+        unshift: 0,
+        outConnect: false
+    };
+
+    button.midi = [0x93 + deckNumber, 0x14];
+    button.unshift = function() {
+        this.inKey = "beatlooproll_0.125_activate";
+        this.outKey = "beatlooproll_0.125_activate";
+    };
+    this.pads[0] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x15];
+    button.unshift = function() {
+        this.inKey = "beatlooproll_0.25_activate";
+        this.outKey = "beatlooproll_0.25_activate";
+    };
+    this.pads[1] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x16];
+    button.unshift = function() {
+        this.inKey = "beatlooproll_0.5_activate";
+        this.outKey = "beatlooproll_0.5_activate";
+    };
+    this.pads[2] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x17];
+    button.unshift = function() {
+        this.inKey = "beatlooproll_1_activate";
+        this.outKey = "beatlooproll_1_activate";
+    };
+    this.pads[3] = new components.Button(button);
+
+    // --
+
+    button.midi = [0x93 + deckNumber, 0x18];
+    button.unshift = function() {
+        this.inKey = "reverseroll";
+        this.outKey = "reverseroll";
+    };
+    this.pads[4] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x19];
+    button.unshift = function() {
+        this.inKey = "start";
+        this.outKey = "start";
+    };
+    this.pads[5] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x20];
+    button.unshift = function() {
+        this.inKey = "back";
+        this.outKey = "back";
+    };
+    this.pads[6] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x21];
+    button.unshift = function() {
+        this.inKey = "fwd";
+        this.outKey = "fwd";
+    };
+    this.pads[7] = new components.Button(button);
+};
+MixtrackPlatinumFX.ModeCustom1.prototype = Object.create(components.ComponentContainer.prototype);
 
 
 MixtrackPlatinumFX.Browse = function() {
