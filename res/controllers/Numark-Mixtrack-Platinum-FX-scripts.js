@@ -196,6 +196,9 @@ MixtrackPlatinumFX.faderCutSysex4 = [0xF0, 0x00, 0x20, 0x7F, 0x13, 0xF7];
 // Loop button: Set to true for loop button to always set a 16 beat quantized loop
 MixtrackPlatinumFX.loopButton16Q = true;
 
+// Change pitch bend buttons -/+ from standard behaviour to -/+ 0.01 BPM
+MixtrackPlatinumFX.pitchBend001 = true;
+
 
 // state variable, don't touch
 MixtrackPlatinumFX.shifted = false;
@@ -1011,11 +1014,24 @@ MixtrackPlatinumFX.Deck = function(number) {
         shift: function() {
             this.type = components.Button.prototype.types.toggle;
             this.inKey = "keylock";
+            this.input = components.Button.prototype.input;
         },
         unshift: function() {
-            this.type = components.Button.prototype.types.push;
-            this.inKey = "rate_temp_up";
+            if (MixtrackPlatinumFX.pitchBend001) {
+                this.input = function(channel, control, value) {
+                    if (!this.isPress(channel, control, value)) {
+                        return;
+                    }
+                    const group = `[Channel${ channel + 1 }]`;
+                    engine.setValue(group, "bpm", engine.getValue(group, "bpm") + 0.01);
+                };
+            } else { // Standard pitch bend behaviour
+                this.inKey = "rate_temp_up";
+                this.input = components.Button.prototype.input;
+                this.type = components.Button.prototype.types.push;
+            }
         }
+
     });
 
     this.pitchBendDown = new components.Button({
@@ -1030,8 +1046,19 @@ MixtrackPlatinumFX.Deck = function(number) {
             };
         },
         unshift: function() {
-            this.inKey = "rate_temp_down";
-            this.input = components.Button.prototype.input;
+            if (MixtrackPlatinumFX.pitchBend001) {
+                this.input = function(channel, control, value) {
+                    if (!this.isPress(channel, control, value)) {
+                        return;
+                    }
+                    const group = `[Channel${ channel + 1 }]`;
+                    engine.setValue(group, "bpm", engine.getValue(group, "bpm") - 0.01);
+                };
+            } else { // Standard pitch bend behaviour
+                this.inKey = "rate_temp_down";
+                this.input = components.Button.prototype.input;
+                this.type = components.Button.prototype.types.push;
+            }
         }
     });
 
