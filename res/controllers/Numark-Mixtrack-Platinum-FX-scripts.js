@@ -147,9 +147,9 @@ MixtrackPlatinumFX.PadModeLayerConfig = {
     A: [MixtrackPlatinumFX.PadModes.HOTCUES1,       // Layer 0
         MixtrackPlatinumFX.PadModes.NONE,       // Layer 1
         MixtrackPlatinumFX.PadModes.HOTCUES2,       // Layer 2 ...
-        MixtrackPlatinumFX.PadModes.BEATJUMP,
+        MixtrackPlatinumFX.PadModes.BEATJUMP2,
         MixtrackPlatinumFX.PadModes.NONE,
-        MixtrackPlatinumFX.PadModes.BEATJUMP2,],
+        MixtrackPlatinumFX.PadModes.NONE,],
 
     B: [MixtrackPlatinumFX.PadModes.CUSTOM1,
         MixtrackPlatinumFX.PadModes.AUTOLOOP1,
