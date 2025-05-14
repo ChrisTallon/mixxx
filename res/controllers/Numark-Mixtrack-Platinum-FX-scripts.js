@@ -199,6 +199,10 @@ MixtrackPlatinumFX.loopButton16Q = true;
 // Change pitch bend buttons -/+ from standard behaviour to -/+ 0.01 BPM
 MixtrackPlatinumFX.pitchBend001 = true;
 
+// Disable BPM and rate display
+MixtrackPlatinumFX.hideBPM = false;
+
+
 
 // state variable, don't touch
 MixtrackPlatinumFX.shifted = false;
@@ -2147,6 +2151,8 @@ MixtrackPlatinumFX.sendScreenTimeMidi = function(deck, time) {
 };
 
 MixtrackPlatinumFX.sendScreenBpmMidi = function(deck, bpm) {
+    if (MixtrackPlatinumFX.hideBPM) { return; }
+
     const bpmArray = MixtrackPlatinumFX.encodeNumToArray(bpm);
     bpmArray.shift();
     bpmArray.shift();
@@ -2197,6 +2203,8 @@ var sendSysex = function(buffer) {
 };
 
 MixtrackPlatinumFX.sendScreenRateMidi = function(deck, rate) {
+    if (MixtrackPlatinumFX.hideBPM) { return; }
+
     const rateArray = MixtrackPlatinumFX.encodeNumToArray(rate, 2);
 
     const bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x02];
