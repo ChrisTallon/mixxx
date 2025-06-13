@@ -98,7 +98,8 @@ MixtrackPlatinumFX.PadModes = {
     BEATJUMP: 12,
     BEATJUMP2: 13,
     STEMS: 14,
-    CUSTOM1: 15
+    CUSTOM1: 15,
+    PREVIEW: 16
 };
 
 // Layer config. There are 6 pad mode layers:
@@ -159,7 +160,7 @@ MixtrackPlatinumFX.PadModeLayerConfig = {
         MixtrackPlatinumFX.PadModes.NONE,],
 
     C: [MixtrackPlatinumFX.PadModes.FADERCUTS1,
-        MixtrackPlatinumFX.PadModes.NONE,
+        MixtrackPlatinumFX.PadModes.STEMS,
         MixtrackPlatinumFX.PadModes.FADERCUTS2,
         MixtrackPlatinumFX.PadModes.FADERCUTS3,
         MixtrackPlatinumFX.PadModes.NONE,
