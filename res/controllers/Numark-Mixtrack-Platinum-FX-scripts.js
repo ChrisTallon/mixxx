@@ -170,7 +170,7 @@ MixtrackPlatinumFX.PadModeLayerConfig = {
         MixtrackPlatinumFX.PadModes.SAMPLE2,
         MixtrackPlatinumFX.PadModes.KEYPLAY,
         MixtrackPlatinumFX.PadModes.NONE,
-        MixtrackPlatinumFX.PadModes.NONE,],
+        MixtrackPlatinumFX.PadModes.PREVIEW,],
 };
 
 /*
@@ -1123,6 +1123,7 @@ MixtrackPlatinumFX.PadSection = function(deckNumber) {
     this.modes[MixtrackPlatinumFX.PadModes.KEYPLAY] = new MixtrackPlatinumFX.ModeKeyPlay(deckNumber);
     this.modes[MixtrackPlatinumFX.PadModes.STEMS] = new MixtrackPlatinumFX.ModeStems(deckNumber);
     this.modes[MixtrackPlatinumFX.PadModes.CUSTOM1] = new MixtrackPlatinumFX.ModeCustom1(deckNumber);
+    this.modes[MixtrackPlatinumFX.PadModes.PREVIEW] = new MixtrackPlatinumFX.ModePreview(deckNumber);
 
 
     this.modeButtonPress = function(channel, control, value) {
@@ -1676,6 +1677,83 @@ MixtrackPlatinumFX.ModeStems = function(deckNumber) {
     }
 };
 MixtrackPlatinumFX.ModeStems.prototype = Object.create(components.ComponentContainer.prototype);
+
+MixtrackPlatinumFX.ModePreview = function(deckNumber) {
+    components.ComponentContainer.call(this);
+
+    this.lightOnValue = 0x7F;
+
+    this.pads = new components.ComponentContainer();
+
+    const button = {
+        /*        group: `[PreviewDeck${  deckNumber  }]`,  */
+        group: "[PreviewDeck1]",
+        shiftControl: false,
+        midi: 0,
+        unshift: 0,
+        outConnect: false
+    };
+
+    button.midi = [0x93 + deckNumber, 0x14];
+    button.unshift = function() {
+        this.inKey = "LoadSelectedTrack";
+        this.outKey = "LoadSelectedTrack";
+    };
+    this.pads[0] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x15];
+    button.unshift = function() {
+        this.inKey = "play";
+        this.outKey = "play";
+    };
+    this.pads[1] = new components.PlayButton(button);
+
+    button.midi = [0x93 + deckNumber, 0x16];
+    button.unshift = function() {
+        this.inKey = "beatjump_64_backward";
+        this.outKey = "beatjump_64_backward";
+    };
+    this.pads[2] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x17];
+    button.unshift = function() {
+        this.inKey = "beatjump_64_forward";
+        this.outKey = "beatjump_64_forward";
+    };
+    this.pads[3] = new components.Button(button);
+
+    // --
+
+    button.midi = [0x93 + deckNumber, 0x18];
+    button.unshift = function() {
+        this.inKey = "LoadSelectedTrackAndPlay";
+        this.outKey = "LoadSelectedTrackAndPlay";
+    };
+    this.pads[4] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x19];
+    button.unshift = function() {
+        this.inKey = "cue_default";
+        this.outKey = "cue_default";
+    };
+    this.pads[5] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x20];
+    button.unshift = function() {
+        this.inKey = "back";
+        this.outKey = "back";
+    };
+    this.pads[6] = new components.Button(button);
+
+    button.midi = [0x93 + deckNumber, 0x21];
+    button.unshift = function() {
+        this.inKey = "fwd";
+        this.outKey = "fwd";
+    };
+    this.pads[7] = new components.Button(button);
+
+};
+MixtrackPlatinumFX.ModePreview.prototype = Object.create(components.ComponentContainer.prototype);
 
 MixtrackPlatinumFX.ModeSample = function(deckNumber, exactMode) {
     components.ComponentContainer.call(this);
